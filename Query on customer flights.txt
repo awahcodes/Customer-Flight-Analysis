@@ -1,0 +1,61 @@
+1. What is the total amount of tickets sold if we have low tickets as less than 20,000USD, mid range tick between 20,000 and 150000USD and the high range tickets as above 150,000USD
+
+SELECT
+CASE
+WHEN total_amount < 20000 THEN 'Low Price'
+WHEN total_amount BETWEEN 20000 and 150000 THEN 'Mid price'
+ELSE 'Higher Price'
+END  ticket_range,  COUNT(*) as Num_of_tickets
+from bookings
+WHERE total_amount IS NOT NULL
+GROUP BY ticket_range
+
+2. How many flights departed each season.  
+
+Winter: Dec, Jan, Feb
+Spring: Mar, Apr, May
+Summer: Jun, Jul, Aug
+Fall: Sept, Oct, Nov
+
+SELECT COUNT(*) as Num_of_flights,
+CASE 
+WHEN EXTRACT(month from scheduled_departure) IN (12,1,2) THEN 'Winter'
+WHEN EXTRACT(month from scheduled_departure) IN (3,4,5) THEN 'Spring'
+WHEN EXTRACT(month from scheduled_departure) IN (6,7,8) THEN 'Summer'
+WHEN EXTRACT(month from scheduled_departure) IN (9,10,11) THEN 'Fall'
+END as Travel_Season
+FROM flights
+GROUP BY Travel_Season 
+
+3. Which category of tickets did customers by the most.
+
+SELECT s.fare_conditions as category
+,COUNT(s.seat_no) as num_of_tickets
+FROM boarding_passes as b
+INNER JOIN seats as s
+USING(seat_no)
+GROUP BY category
+ORDER BY num_of_tickets DESC
+LIMIT 1
+
+4. How many tickets have been booked but with no boarding pass
+
+SELECT
+COUNT(*)
+FROM boarding_passes as b
+FULL OUTER JOIN tickets as t
+USING(ticket_no)
+WHERE b.ticket_no IS NULL
+
+5. Which aircraft have never been used for flight
+
+SELECT
+*
+FROM aircrafts_data as a
+LEFT JOIN flights as f 
+USING(aircraft_code)
+WHERE f.flight_id is NULL
+
+
+
+
