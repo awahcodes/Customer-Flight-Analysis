@@ -57,5 +57,20 @@ USING(aircraft_code)
 WHERE f.flight_id is NULL
 
 
+6. What is the average amount for each seat on all flights
 
+SELECT seat_no, ROUND(AVG(amount),2) as average_amt
+FROM boarding_passes as b
+LEFT JOIN ticket_flights as t
+ON b.ticket_no = t.ticket_no
+AND b.flight_id = t.flight_id
+GROUP BY seat_no
+ORDER BY  average_amt DESC
+
+7. Write a query the running total of how late the flights are (difference btw actual_arrival and scheduled_arriva) ordered by flight_id including the departure_aiport
+
+SELECT 
+flight_id, actual_arrival - scheduled_arrival,
+SUM(actual_arrival - scheduled_arrival ) OVER(PARTITION BY departure_airport ORDER BY flight_id)
+FROM flights
 
